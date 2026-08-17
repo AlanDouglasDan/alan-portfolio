@@ -1,0 +1,297 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens. CLAUDE.md §4.
+   Every colour, type size, radius and shadow in the project resolves here.
+   Components must never carry a raw hex or an arbitrary value.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* Surfaces */
+  --color-paper: #f4f1ea;
+  --color-paper-sunk: #ebe7de;
+  --color-paper-raised: #fbf9f5;
+
+  --color-ink: #14161a;
+  --color-ink-soft: #3d424b;
+  /* Darkened from #7A8090 to clear 4.5:1 on --color-paper-sunk. Contrast
+     verified in both themes; the money colours were the ones that failed.
+     CLAUDE.md §8. */
+  --color-ink-faint: #636875;
+  --color-rule: #d6d1c6;
+  --color-rule-dark: #2a2e36;
+
+  /* Semantic money colours. These carry meaning. Use ONLY for money. */
+  --color-credit: #1b6e52;
+  --color-credit-wash: #e3ede7;
+  --color-debit: #a6402a;
+  --color-debit-wash: #f5e5e0;
+  --color-pending: #886118;
+  --color-pending-wash: #f7eeda;
+
+  /* The single brand accent. Links, focus, key CTA. Nothing else. */
+  --color-signal: #b63f1d;
+
+  /* Families. Wired to next/font in app/layout.tsx. */
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Fluid type scale */
+  --text-display-xl: clamp(3.25rem, 9vw, 7rem);
+  --text-display-xl--line-height: 0.95;
+  --text-display-xl--letter-spacing: -0.03em;
+
+  --text-display-l: clamp(2.25rem, 5vw, 3.75rem);
+  --text-display-l--line-height: 1;
+  --text-display-l--letter-spacing: -0.02em;
+
+  --text-display-m: clamp(1.5rem, 3vw, 2.25rem);
+  --text-display-m--line-height: 1.05;
+  --text-display-m--letter-spacing: -0.02em;
+
+  --text-body-l: 1.125rem;
+  --text-body-l--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-body-s: 0.875rem;
+  --text-body-s--line-height: 1.55;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.08em;
+
+  /* Ledgers are ruled, not shadowed. One shadow token, for floating chrome. */
+  --shadow-lift: 0 1px 2px rgb(20 22 26 / 0.04), 0 8px 24px rgb(20 22 26 / 0.06);
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+
+  --container-content: 1240px;
+}
+
+/* ---------------------------------------------------------------------------
+   Dark mode. Surfaces invert; money colours lift in luminance so they hold
+   contrast against ink. Selector specificity (0,1,1) intentionally beats the
+   :root block Tailwind emits for @theme.
+   --------------------------------------------------------------------------- */
+
+@custom-variant dark (&:where(html[data-theme="dark"] *, html[data-theme="dark"]));
+
+@layer theme {
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      --color-paper: #0e1014;
+      --color-paper-sunk: #14161a;
+      --color-paper-raised: #1a1d23;
+
+      --color-ink: #f4f1ea;
+      --color-ink-soft: #b9bcc4;
+      --color-ink-faint: #8b90a0;
+      --color-rule: #2a2e36;
+      --color-rule-dark: #d6d1c6;
+
+      --color-credit: #4bb98c;
+      --color-credit-wash: #14261f;
+      --color-debit: #e0765a;
+      --color-debit-wash: #2b1712;
+      --color-pending: #d9a63f;
+      --color-pending-wash: #2b2113;
+
+      --color-signal: #f0714a;
+
+      --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.45);
+    }
+  }
+
+  html[data-theme="dark"] {
+    --color-paper: #0e1014;
+    --color-paper-sunk: #14161a;
+    --color-paper-raised: #1a1d23;
+
+    --color-ink: #f4f1ea;
+    --color-ink-soft: #b9bcc4;
+    --color-ink-faint: #8b90a0;
+    --color-rule: #2a2e36;
+    --color-rule-dark: #d6d1c6;
+
+    --color-credit: #4bb98c;
+    --color-credit-wash: #14261f;
+    --color-debit: #e0765a;
+    --color-debit-wash: #2b1712;
+    --color-pending: #d9a63f;
+    --color-pending-wash: #2b2113;
+
+    --color-signal: #f0714a;
+
+    --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      color-scheme: dark;
+    }
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  /* Focus is never removed, only replaced. CLAUDE.md §8. */
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background-color: var(--color-signal);
+    color: var(--color-paper);
+  }
+
+  /* Reduced motion is non-negotiable. Anything that slips past the
+     useMotionSafe hook still gets neutralised here. CLAUDE.md §5. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Used on every figure, table cell and timestamp in the project. */
+  .tnum {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "zero" 1;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .rule-t {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .rule-b {
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .prose-measure {
+    max-width: 68ch;
+  }
+
+  /*
+   * A horizontal scroller that is also a containing block.
+   *
+   * The `position: relative` is load-bearing, not decoration. Every money
+   * figure carries a visually-hidden label, and `.sr-only` is absolutely
+   * positioned. Inside a table wider than its scroller, those labels resolve
+   * their containing block against an ancestor *outside* the scroller and sit
+   * at the table's full width — which quietly adds a few pixels of horizontal
+   * scroll to the whole document. Making the scroller positioned keeps them in.
+   */
+  .scroll-x {
+    position: relative;
+    overflow-x: auto;
+  }
+
+  .scroll-both {
+    position: relative;
+    overflow: auto;
+  }
+}
+
+@layer utilities {
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+  }
+
+  .skip-link:focus {
+    left: 8px;
+    top: 8px;
+    padding: 8px 12px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  /* The resume prints to A4 through the browser's own pipeline rather than
+     shipping a static PDF that goes stale. */
+  @media print {
+    header:has(nav),
+    footer,
+    .skip-link {
+      display: none !important;
+    }
+
+    body {
+      background: #fff;
+      color: #000;
+    }
+
+    @page {
+      margin: 16mm;
+    }
+
+    h2,
+    h3 {
+      break-after: avoid;
+    }
+
+    li,
+    section {
+      break-inside: avoid;
+    }
+  }
+
+  /* Native view transitions, crossfade fallback handled by the browser.
+     CLAUDE.md §5G. */
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 220ms;
+    }
+  }
+}

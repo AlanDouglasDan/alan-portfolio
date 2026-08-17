@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "alan-portfolio",
+  "main": ".open-next/worker.js",
+
+  // Must not be later than the workerd build bundled with the installed
+  // wrangler, or `wrangler dev` refuses to start.
+  "compatibility_date": "2026-08-11",
+
+  // `nodejs_compat` gives the Next.js server runtime its Node built-ins.
+  // `global_fetch_strictly_public` makes `fetch()` inside the Worker go out to
+  // the public internet rather than looping back into this Worker, which is
+  // what Next's own internal fetches expect.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  // Serves next/image transformations. Costs nothing until an image exists.
+  "images": {
+    "binding": "IMAGES"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+
+  // Deliberately no R2 incremental cache and no WORKER_SELF_REFERENCE binding.
+  // Every route on this site is dynamic — the theme cookie is read in the root
+  // layout — so there is no incrementally-cached page for either to hold, and
+  // both would add a bucket to create before the first deploy could succeed.
+  // If a statically-generated route is added later, see
+  // https://opennext.js.org/cloudflare/caching
+}

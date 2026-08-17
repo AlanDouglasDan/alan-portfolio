@@ -1,0 +1,46 @@
+name: CI
+
+# CLAUDE.md §8 and §10: the gates are in the pipeline, so following them is the
+# path of least resistance. A gate that can be skipped is documentation.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit and property tests
+        run: npm run test
+
+      - name: Colour contrast
+        run: npm run contrast
+
+      - name: Build
+        run: npm run build
+
+      - name: End-to-end
+        run: |
+          npx playwright install --with-deps chromium
+          npm run e2e
+
+      - name: First-load JS budget
+        run: |
+          npx next start -p 3000 &
+          npx wait-on http://127.0.0.1:3000 --timeout 60000
+          npm run budget
