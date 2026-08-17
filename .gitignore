@@ -21,6 +21,7 @@ playwright-report
 # Local agent tooling and working agreement — not part of the published site
 CLAUDE.md
 .claude/
+DEPLOYING.md
 
 # Source resume. Nothing imports it — the site reads the typed files in
 # content/*.ts — and it still carries private drafting notes (team size to fill
