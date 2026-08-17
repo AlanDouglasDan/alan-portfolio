@@ -42,5 +42,9 @@ jobs:
       - name: First-load JS budget
         run: |
           npx next start -p 3000 &
-          npx wait-on http://127.0.0.1:3000 --timeout 60000
+          # Poll rather than pull in wait-on just to sleep.
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null http://127.0.0.1:3000 && break
+            sleep 1
+          done
           npm run budget
